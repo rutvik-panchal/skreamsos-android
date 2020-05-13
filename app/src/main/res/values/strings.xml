@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">SkreamSOS</string>
+    <string name="app_title">SkreamSOS</string>
+    <string name="login">Login</string>
+    <string name="email_id">Email Id</string>
+    <string name="password">Password</string>
+    <string name="go_to_register">Go To Register!</string>
+    <string name="logging_in">Logging In</string>
+    <string name="open">Open</string>
+    <string name="close">Close</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="enable_gps">Enable GPS</string>
+    <string name="location_permission_not_granted">Location Permission not Granted!</string>
+    <string name="continue_btn_txt">Continue</string>
+    <string name="dot">.</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="image">Image</string>
+    <string name="onboard_one_title">Stay safe all the time</string>
+    <string name="onboard_one_description">Safety is the engine, and you are the key that starts it.</string>
+    <string name="onboard_two_title">Don\'t worry!</string>
+    <string name="onboard_two_desc">Heroes in badges always have an eye on you.</string>
+    <string name="onboard_three_title">Report your vows away!</string>
+    <string name="onboard_three_description">All the crimes and emergencies can be reported at one place.</string>
+    <string name="test">Test</string>
+
+</resources>

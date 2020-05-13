@@ -1,0 +1,77 @@
+{
+  "project_info": {
+    "project_number": "204797801457",
+    "firebase_url": "https://skreamsos.firebaseio.com",
+    "project_id": "skreamsos",
+    "storage_bucket": "skreamsos.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:204797801457:android:cc60bbfd61b5c3ccafca50",
+        "android_client_info": {
+          "package_name": "com.example.skreamsos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "204797801457-qnch4sl4sq6n76rjt577pdr08ejqe88p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.skreamsos",
+            "certificate_hash": "abc9aa47d29febdb716cb24f355724a58aac3796"
+          }
+        },
+        {
+          "client_id": "204797801457-42c6o1gr0u1t97tp0l6c1rbmuo9a9u2v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXBUln0KhfT-QMftaC7r-uDEHuYajwRdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "204797801457-df20v5bhrc38fr9g43u6ssnq0s0khoeg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:204797801457:android:9e4d07a771e09808afca50",
+        "android_client_info": {
+          "package_name": "com.rutvik.apps.skreamsos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "204797801457-42c6o1gr0u1t97tp0l6c1rbmuo9a9u2v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXBUln0KhfT-QMftaC7r-uDEHuYajwRdc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "204797801457-df20v5bhrc38fr9g43u6ssnq0s0khoeg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
