@@ -1,5 +1,6 @@
 package com.rutvik.apps.skreamsos.home
 
+import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -8,11 +9,13 @@ import android.os.Looper
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.google.android.material.navigation.NavigationView
 import com.rutvik.apps.skreamsos.R
 import com.rutvik.apps.skreamsos.base.BaseActivity
 import com.rutvik.apps.skreamsos.login.LoginActivity
+import com.rutvik.apps.skreamsos.api.models.SOSAlert
 import com.rutvik.apps.skreamsos.utils.FirebaseHelper
 import com.rutvik.apps.skreamsos.utils.PermissionUtils
 import com.rutvik.apps.skreamsos.utils.SharedPreferenceHelper
@@ -24,6 +27,7 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
 
     companion object{
         const val TAG = "HomeActivity"
+        const val token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Iis5MTk5MDAwMzMzMzMiLCJ1c2VySWQiOiI1ZjQyNDIxZDg4MGJiYzAwMTdjZTcwNjMiLCJpYXQiOjE1OTgxODg0OTR9.A8uZgATvlA4BW7ORuC0Cp5WaXZvKM1uEzTOw2JikZFo"
     }
 
     @Inject lateinit var presenter: HomePresenter
@@ -52,7 +56,12 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
 
         sosButton.setOnClickListener {
             showToastLong("Latitude: $currentLatitude \nLongitude: $currentLongitude")
-        }
+            val list =  ArrayList<Float>(2)
+            list.add(19.2222F)
+            list.add(21.2222F)
+            val sos = SOSAlert("Point", list)
+            presenter.sendSOS(sos)
+        } 
     }
 
     override fun onStart() {
@@ -81,6 +90,23 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
                 currentLatitude = currentLocation?.latitude
                 currentLongitude = currentLocation?.longitude
             }
+        }
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
         }
         fusedLocationProviderClient?.requestLocationUpdates(
             locationRequest,
