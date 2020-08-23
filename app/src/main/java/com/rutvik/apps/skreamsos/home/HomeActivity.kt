@@ -54,14 +54,7 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
         setUpSideNavigationDrawer()
         updateHeaderUI()
 
-        sosButton.setOnClickListener {
-            showToastLong("Latitude: $currentLatitude \nLongitude: $currentLongitude")
-            val list =  ArrayList<Float>(2)
-            list.add(19.2222F)
-            list.add(21.2222F)
-            val sos = SOSAlert("Point", list)
-            presenter.sendSOS(sos)
-        } 
+        sosButton.setOnClickListener { sendSOS() }
     }
 
     override fun onStart() {
@@ -123,11 +116,25 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
         navigation.itemIconTintList = null
         navigation.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
+                R.id.stop_sos -> presenter.deleteSOS()
                 R.id.signout -> presenter.signOut()
                 else -> return@OnNavigationItemSelectedListener true
             }
             true
         })
+    }
+
+    override fun sendSOS() {
+        showToastLong("Latitude: $currentLatitude \nLongitude: $currentLongitude")
+        val list =  ArrayList<Float>(2)
+        list.add(19.2222F)
+        list.add(21.2222F)
+        val sos = SOSAlert("Point", list)
+        presenter.sendSOS(sos)
+    }
+
+    override fun deleteSOS() {
+        presenter.deleteSOS()
     }
 
     override fun updateHeaderUI() {
