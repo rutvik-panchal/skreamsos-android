@@ -23,5 +23,6 @@
     <string name="onboard_three_title">Report your vows away!</string>
     <string name="onboard_three_description">All the crimes and emergencies can be reported at one place.</string>
     <string name="test">Test</string>
+    <string name="stop_sos">Stop SOS</string>
 
 </resources>

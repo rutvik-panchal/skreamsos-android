@@ -5,8 +5,10 @@
             android:id="@+id/profile"
             android:icon="@drawable/ic_profile"
             android:title="Profile"/>
-        <item
-            android:id="@+id/report"
+        <item android:id="@+id/stop_sos"
+            android:icon="@drawable/ic_stop_sos"
+            android:title="@string/stop_sos"/>
+        <item android:id="@+id/report"
             android:icon="@drawable/ic_police"
             android:title="Report a Crime"/>
         <item android:id="@+id/signout"
