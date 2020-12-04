@@ -24,6 +24,10 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
 
     companion object{
         const val TAG = "HomeActivity"
+<<<<<<< Updated upstream
+=======
+        const val token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Iis5MTk3NjkxMjk5NjkiLCJ1c2VySWQiOiI1ZjNjZGQyNDllNzdhNTI3OWNlYmNjNTIiLCJpYXQiOjE1OTc4MjQzNDV9.JmGgm-qvrpYsSSYcPAFLLIvr2U9VG5KSjEQz_1NxLDc"
+>>>>>>> Stashed changes
     }
 
     @Inject lateinit var presenter: HomePresenter
@@ -104,6 +108,22 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
         })
     }
 
+<<<<<<< Updated upstream
+=======
+    override fun sendSOS() {
+        showToastLong("Latitude: $currentLatitude \nLongitude: $currentLongitude")
+        val list =  ArrayList<Float>(2)
+        list.add(currentLongitude!!.toFloat())
+        list.add(currentLatitude!!.toFloat())
+        val sos = SOSAlert("Point", list)
+        presenter.sendSOS(sos)
+    }
+
+    override fun deleteSOS() {
+        presenter.deleteSOS()
+    }
+
+>>>>>>> Stashed changes
     override fun updateHeaderUI() {
         val headerView = navigation.getHeaderView(0)
         val textHeaderName = headerView.findViewById<TextView>(R.id.textViewNavName)
