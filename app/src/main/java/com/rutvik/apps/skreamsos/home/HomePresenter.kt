@@ -6,9 +6,11 @@ import com.rutvik.apps.skreamsos.api.models.ResponseMessage
 import com.rutvik.apps.skreamsos.api.models.SOSAlert
 import com.rutvik.apps.skreamsos.api.models.SOSResponse
 import com.rutvik.apps.skreamsos.utils.FirebaseHelper
+import okhttp3.MultipartBody
 import retrofit2.Callback
 import retrofit2.Response
 import javax.inject.Inject
+
 
 class HomePresenter @Inject constructor(): HomeContract.HomePresenter {
 
@@ -48,6 +50,22 @@ class HomePresenter @Inject constructor(): HomeContract.HomePresenter {
             }
         }
         ApiClient.deleteSOSAlert(callback)
+    }
+
+    override fun sendSOSImage(image: MultipartBody.Part) {
+        Log.d("HomePresenter", "sendSOSImage() called")
+
+        val callback = object : Callback<ResponseMessage> {
+            override fun onResponse(call: retrofit2.Call<ResponseMessage>, response: Response<ResponseMessage>) {
+                Log.d("HomePresenter", "sendSOSImage : " + response.code().toString())
+                Log.d("HomePresenter", "sendSOSImage : " + response.body()?.message.toString())
+            }
+
+            override fun onFailure(call: retrofit2.Call<ResponseMessage>, t: Throwable) {
+                Log.d("HomePresenter", "sendSOSImage() : API Failed")
+            }
+        }
+        ApiClient.sendSOSImage(callback, image)
     }
 
     override fun signOut() {

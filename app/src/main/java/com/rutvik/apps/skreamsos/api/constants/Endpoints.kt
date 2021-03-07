@@ -9,4 +9,6 @@ object Endpoints {
     const val SEND_SOS = "/civilian/sosSignal/"
 
     const val DELETE_SOS = "/civilian/sosSignal/"
+
+    const val SEND_SOS_IMAGE = "/civilian/sosSignal/media"
 }
