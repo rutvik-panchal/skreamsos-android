@@ -20,9 +20,11 @@ object PermissionUtils {
         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
                 PackageManager.PERMISSION_GRANTED
 
-    fun requestAccessFineLocationPermission(activity: AppCompatActivity, requestId: Int)
-            = ActivityCompat.requestPermissions(activity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), requestId)
+    fun requestAccessFineLocationPermission(activity: AppCompatActivity, requestId: Int) =
+        ActivityCompat.requestPermissions(
+            activity,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), requestId
+        )
 
 
     fun isLocationEnabled(context: Context): Boolean {

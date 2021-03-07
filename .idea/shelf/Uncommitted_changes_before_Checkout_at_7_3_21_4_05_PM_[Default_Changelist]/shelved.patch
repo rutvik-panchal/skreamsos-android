@@ -1,0 +1,101 @@
+Index: app/src/main/java/com/rutvik/apps/skreamsos/home/HomeActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.rutvik.apps.skreamsos.home\n\nimport android.content.Intent\nimport android.content.pm.PackageManager\nimport android.location.Location\nimport android.os.Bundle\nimport android.os.Looper\nimport android.view.MenuItem\nimport android.widget.TextView\nimport androidx.appcompat.app.ActionBarDrawerToggle\nimport com.google.android.gms.location.*\nimport com.google.android.material.navigation.NavigationView\nimport com.rutvik.apps.skreamsos.R\nimport com.rutvik.apps.skreamsos.base.BaseActivity\nimport com.rutvik.apps.skreamsos.login.LoginActivity\nimport com.rutvik.apps.skreamsos.utils.FirebaseHelper\nimport com.rutvik.apps.skreamsos.utils.PermissionUtils\nimport com.rutvik.apps.skreamsos.utils.SharedPreferenceHelper\nimport com.rutvik.apps.skreamsos.utils.constants.PrefConstants\nimport kotlinx.android.synthetic.main.activity_home.*\nimport javax.inject.Inject\n\nclass HomeActivity : BaseActivity(), HomeContract.HomeView {\n\n    companion object{\n        const val TAG = \"HomeActivity\"\n    }\n\n    @Inject lateinit var presenter: HomePresenter\n    @Inject lateinit var prefHelper: SharedPreferenceHelper\n\n    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle\n\n    private lateinit var locationCallback: LocationCallback\n    private var fusedLocationProviderClient: FusedLocationProviderClient? = null\n    private var currentLocation: Location? = null\n    private var currentLatitude: Double? = null\n    private var currentLongitude: Double? = null\n\n    override fun onCreate(savedInstanceState: Bundle?) {\n        super.onCreate(savedInstanceState)\n\n        getApplicationComponent().inject(this)\n        setContentView(R.layout.activity_home)\n\n        presenter.attachView(this)\n        prefHelper.init(this)\n\n        setSupportActionBar(toolbar)\n        setUpSideNavigationDrawer()\n        updateHeaderUI()\n\n        sosButton.setOnClickListener {\n            showToastLong(\"Latitude: $currentLatitude \\nLongitude: $currentLongitude\")\n        }\n    }\n\n    override fun onStart() {\n        super.onStart()\n        if (PermissionUtils.isAccessFineLocationGranted(this)) {\n            if (PermissionUtils.isLocationEnabled(this)) {\n                setUpLocationListener()\n            } else {\n                PermissionUtils.showGPSNotEnabledDialog(this)\n            }\n        } else {\n            PermissionUtils.requestAccessFineLocationPermission(this, PermissionUtils.RC_LOCATION_PERMISSION)\n        }\n    }\n\n    private fun setUpLocationListener() {\n        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)\n        val locationRequest = LocationRequest().setInterval(2000).setFastestInterval(2000)\n            .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)\n        locationCallback = object : LocationCallback() {\n            override fun onLocationResult(locationResult: LocationResult?) {\n                locationResult ?: return\n                for (location in locationResult.locations){\n                    currentLocation = location\n                }\n                currentLatitude = currentLocation?.latitude\n                currentLongitude = currentLocation?.longitude\n            }\n        }\n        fusedLocationProviderClient?.requestLocationUpdates(\n            locationRequest,\n            locationCallback,\n            Looper.myLooper()\n        )\n    }\n\n    private fun setUpSideNavigationDrawer() {\n        actionBarDrawerToggle = ActionBarDrawerToggle(this, homeDrawer, R.string.open, R.string.close)\n        homeDrawer.addDrawerListener(actionBarDrawerToggle)\n        actionBarDrawerToggle.syncState()\n        supportActionBar?.setDisplayHomeAsUpEnabled(true)\n        navigation.itemIconTintList = null\n        navigation.setNavigationItemSelectedListener(NavigationView.OnNavigationItemSelectedListener { item ->\n            when (item.itemId) {\n                R.id.signout -> presenter.signOut()\n                else -> return@OnNavigationItemSelectedListener true\n            }\n            true\n        })\n    }\n\n    override fun updateHeaderUI() {\n        val headerView = navigation.getHeaderView(0)\n        val textHeaderName = headerView.findViewById<TextView>(R.id.textViewNavName)\n        val textHeaderPhone = headerView.findViewById<TextView>(R.id.textViewNavPhNo)\n        if (prefHelper.readBoolean(PrefConstants.HAS_USER_DETAILS)!!) {\n            textHeaderName.text = prefHelper.readString(PrefConstants.USER_NAME)\n            textHeaderPhone.text = prefHelper.readString(PrefConstants.USER_PHONE_NO)\n        } else {\n            val user = FirebaseHelper.getUser()\n            textHeaderName.text = user?.displayName\n            textHeaderName.text = user?.phoneNumber\n        }\n    }\n\n    override fun signOutUser() {\n        showToastLong(\"Signed Out!\")\n        startActivity(Intent(this, LoginActivity::class.java))\n        finish()\n    }\n\n    override fun onOptionsItemSelected(item: MenuItem?): Boolean {\n        if (actionBarDrawerToggle.onOptionsItemSelected(item)){\n            return true\n        }\n        return  super.onOptionsItemSelected(item!!)\n    }\n\n    override fun onRequestPermissionsResult(\n        requestCode: Int,\n        permissions: Array<out String>,\n        grantResults: IntArray\n    ) {\n        super.onRequestPermissionsResult(requestCode, permissions, grantResults)\n        when (requestCode) {\n            PermissionUtils.RC_LOCATION_PERMISSION -> {\n                if (grantResults.isNotEmpty() &&\n                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {\n                    if (PermissionUtils.isLocationEnabled(this)) {\n                        setUpLocationListener()\n                    } else {\n                        PermissionUtils.showGPSNotEnabledDialog(this)\n                    }\n                } else {\n                    showToastLong(getString(R.string.location_permission_not_granted))\n                }\n            }\n        }\n    }\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/rutvik/apps/skreamsos/home/HomeActivity.kt	(revision 8a2941deec521d7db68cb7f710f6657b7f030d89)
++++ app/src/main/java/com/rutvik/apps/skreamsos/home/HomeActivity.kt	(date 1615113334000)
+@@ -1,5 +1,6 @@
+ package com.rutvik.apps.skreamsos.home
+ 
++import android.Manifest
+ import android.content.Intent
+ import android.content.pm.PackageManager
+ import android.location.Location
+@@ -8,6 +9,7 @@
+ import android.view.MenuItem
+ import android.widget.TextView
+ import androidx.appcompat.app.ActionBarDrawerToggle
++import androidx.core.app.ActivityCompat
+ import com.google.android.gms.location.*
+ import com.google.android.material.navigation.NavigationView
+ import com.rutvik.apps.skreamsos.R
+@@ -82,6 +84,23 @@
+                 currentLongitude = currentLocation?.longitude
+             }
+         }
++        if (ActivityCompat.checkSelfPermission(
++                this,
++                Manifest.permission.ACCESS_FINE_LOCATION
++            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
++                this,
++                Manifest.permission.ACCESS_COARSE_LOCATION
++            ) != PackageManager.PERMISSION_GRANTED
++        ) {
++            // TODO: Consider calling
++            //    ActivityCompat#requestPermissions
++            // here to request the missing permissions, and then overriding
++            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
++            //                                          int[] grantResults)
++            // to handle the case where the user grants the permission. See the documentation
++            // for ActivityCompat#requestPermissions for more details.
++            return
++        }
+         fusedLocationProviderClient?.requestLocationUpdates(
+             locationRequest,
+             locationCallback,
+Index: app/src/main/java/com/rutvik/apps/skreamsos/utils/SharedPreferenceHelper.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.rutvik.apps.skreamsos.utils\n\nimport android.content.Context\nimport android.content.SharedPreferences\nimport com.rutvik.apps.skreamsos.utils.constants.PrefConstants\nimport javax.inject.Inject\n\nclass SharedPreferenceHelper @Inject constructor() {\n\n    companion object {\n        const val TAG = \"SharedPreferencesHelper\"\n    }\n\n    private var sharedPreferences: SharedPreferences? = null\n\n    fun init(context: Context) {\n        if (sharedPreferences == null) {\n            sharedPreferences = context.getSharedPreferences(PrefConstants.PREF_NAME, Context.MODE_PRIVATE)\n        }\n    }\n\n    fun readString(key: String) : String? {\n        return sharedPreferences?.getString(key, \"\")\n    }\n\n    fun readBoolean(key: String) : Boolean? {\n        return sharedPreferences!!.getBoolean(key, false)\n    }\n\n    fun write(key: String, value: Boolean) {\n        val editor = sharedPreferences?.edit()\n        editor?.putBoolean(key, value)\n        editor?.apply()\n    }\n\n    fun write(key: String, value: String) {\n        val editor = sharedPreferences?.edit()\n        editor?.putString(key, value)\n        editor?.apply()\n    }\n\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/rutvik/apps/skreamsos/utils/SharedPreferenceHelper.kt	(revision 8a2941deec521d7db68cb7f710f6657b7f030d89)
++++ app/src/main/java/com/rutvik/apps/skreamsos/utils/SharedPreferenceHelper.kt	(date 1615113334000)
+@@ -15,15 +15,16 @@
+ 
+     fun init(context: Context) {
+         if (sharedPreferences == null) {
+-            sharedPreferences = context.getSharedPreferences(PrefConstants.PREF_NAME, Context.MODE_PRIVATE)
++            sharedPreferences =
++                context.getSharedPreferences(PrefConstants.PREF_NAME, Context.MODE_PRIVATE)
+         }
+     }
+ 
+-    fun readString(key: String) : String? {
++    fun readString(key: String): String? {
+         return sharedPreferences?.getString(key, "")
+     }
+ 
+-    fun readBoolean(key: String) : Boolean? {
++    fun readBoolean(key: String): Boolean? {
+         return sharedPreferences!!.getBoolean(key, false)
+     }
+ 
+Index: app/src/main/java/com/rutvik/apps/skreamsos/utils/PermissionUtils.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.rutvik.apps.skreamsos.utils\n\nimport android.Manifest\nimport android.content.Context\nimport android.content.Intent\nimport android.content.pm.PackageManager\nimport android.location.LocationManager\nimport android.provider.Settings\nimport androidx.appcompat.app.AlertDialog\nimport androidx.appcompat.app.AppCompatActivity\nimport androidx.core.app.ActivityCompat\nimport androidx.core.content.ContextCompat\nimport com.rutvik.apps.skreamsos.R\n\nobject PermissionUtils {\n\n    const val RC_LOCATION_PERMISSION = 1001\n\n    fun isAccessFineLocationGranted(context: Context): Boolean =\n        ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==\n                PackageManager.PERMISSION_GRANTED\n\n    fun requestAccessFineLocationPermission(activity: AppCompatActivity, requestId: Int)\n            = ActivityCompat.requestPermissions(activity,\n                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), requestId)\n\n\n    fun isLocationEnabled(context: Context): Boolean {\n        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager\n        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)\n                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)\n    }\n\n    fun showGPSNotEnabledDialog(context: Context) {\n        AlertDialog.Builder(context)\n            .setTitle(context.getString(R.string.enable_gps))\n            .setMessage(\"Required for this app\")\n            .setCancelable(false)\n            .setPositiveButton(\"Enable Now\") { _, _ ->\n                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))\n            }\n            .show()\n    }\n\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/rutvik/apps/skreamsos/utils/PermissionUtils.kt	(revision 8a2941deec521d7db68cb7f710f6657b7f030d89)
++++ app/src/main/java/com/rutvik/apps/skreamsos/utils/PermissionUtils.kt	(date 1615113334000)
+@@ -20,9 +20,11 @@
+         ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) ==
+                 PackageManager.PERMISSION_GRANTED
+ 
+-    fun requestAccessFineLocationPermission(activity: AppCompatActivity, requestId: Int)
+-            = ActivityCompat.requestPermissions(activity,
+-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), requestId)
++    fun requestAccessFineLocationPermission(activity: AppCompatActivity, requestId: Int) =
++        ActivityCompat.requestPermissions(
++            activity,
++            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), requestId
++        )
+ 
+ 
+     fun isLocationEnabled(context: Context): Boolean {

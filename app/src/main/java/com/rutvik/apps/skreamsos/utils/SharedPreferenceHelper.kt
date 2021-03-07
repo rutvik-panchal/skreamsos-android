@@ -15,15 +15,16 @@ class SharedPreferenceHelper @Inject constructor() {
 
     fun init(context: Context) {
         if (sharedPreferences == null) {
-            sharedPreferences = context.getSharedPreferences(PrefConstants.PREF_NAME, Context.MODE_PRIVATE)
+            sharedPreferences =
+                context.getSharedPreferences(PrefConstants.PREF_NAME, Context.MODE_PRIVATE)
         }
     }
 
-    fun readString(key: String) : String? {
+    fun readString(key: String): String? {
         return sharedPreferences?.getString(key, "")
     }
 
-    fun readBoolean(key: String) : Boolean? {
+    fun readBoolean(key: String): Boolean? {
         return sharedPreferences!!.getBoolean(key, false)
     }
 

@@ -127,8 +127,8 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
     override fun sendSOS() {
         showToastLong("Latitude: $currentLatitude \nLongitude: $currentLongitude")
         val list =  ArrayList<Float>(2)
-        list.add(19.2222F)
-        list.add(21.2222F)
+        list.add(currentLongitude!!.toFloat())
+        list.add(currentLatitude!!.toFloat())
         val sos = SOSAlert("Point", list)
         presenter.sendSOS(sos)
     }
