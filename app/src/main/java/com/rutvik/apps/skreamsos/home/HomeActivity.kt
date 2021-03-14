@@ -1,6 +1,6 @@
 package com.rutvik.apps.skreamsos.home
 
-import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
 import com.google.android.material.navigation.NavigationView
 import com.rutvik.apps.skreamsos.R
@@ -25,11 +24,11 @@ import com.rutvik.apps.skreamsos.utils.PermissionUtils
 import com.rutvik.apps.skreamsos.utils.SharedPreferenceHelper
 import com.rutvik.apps.skreamsos.utils.constants.PrefConstants
 import kotlinx.android.synthetic.main.activity_home.*
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.*
 import javax.inject.Inject
-import okhttp3.MediaType.Companion.toMediaType
 
 
 @Suppress("DEPRECATION")
@@ -38,6 +37,8 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
     companion object{
         const val TAG = "HomeActivity"
         const val token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Iis5MTk5MDAwMzMzMzMiLCJ1c2VySWQiOiI1ZjQyNDIxZDg4MGJiYzAwMTdjZTcwNjMiLCJpYXQiOjE1OTgxODg0OTR9.A8uZgATvlA4BW7ORuC0Cp5WaXZvKM1uEzTOw2JikZFo"
+        // Preet Token
+//        const val token = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwaG9uZU51bWJlciI6Iis5MTk1NTg4MTQ0MTYiLCJ1c2VySWQiOiI1ZjFhOGEzMjQ3NzRmYjA4NTRhOTgxMTMiLCJpYXQiOjE1OTU1NzU3NzZ9.Fvwot55GALYZPEeY4W_Xt7XCqiDby1AkZWJHa2bPC8g"
     }
 
     @Inject lateinit var presenter: HomePresenter
@@ -88,6 +89,7 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun setUpLocationListener() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         val locationRequest = LocationRequest().setInterval(2000).setFastestInterval(2000)
@@ -102,22 +104,22 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
                 currentLongitude = currentLocation?.longitude
             }
         }
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
+//        if (ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_COARSE_LOCATION
+//            ) != PackageManager.PERMISSION_GRANTED
+//        ) {
+//            // TODO: Consider calling ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            return
+//        }
         fusedLocationProviderClient?.requestLocationUpdates(
             locationRequest,
             locationCallback,
@@ -142,6 +144,7 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
     }
 
     override fun sendSOS() {
+        Log.d(TAG, "Sending SOS")
         showToastLong("Latitude: $currentLatitude \nLongitude: $currentLongitude")
         val list =  ArrayList<Float>(2)
         list.add(currentLongitude!!.toFloat())
@@ -218,8 +221,20 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
         if (requestCode == 111 && resultCode == Activity.RESULT_OK) {
 
             val imageBitmap = data?.extras?.get("data") as Bitmap
-            val input = buildImageBodyPart("image", imageBitmap)
+            val input = buildImageBodyPart("image.jpeg", imageBitmap)
             presenter.sendSOSImage(input)
+
+
+//            Ion.with(application)
+//                .load("https://skreamsos.herokuapp.com/civilian/sosSignal/media")
+//                .setMultipartParameter("name", "source")
+//                .setMultipartFile("image", "image/jpeg", convertBitmapToFile("image", imageBitmap))
+//                .asJsonObject()
+//                .setCallback(FutureCallback<JsonObject?> { e, result ->
+//                    //do stuff with result
+//                    Log.d(TAG, e.toString())
+//                    Log.d(TAG, result.toString())
+//                })
         }
     }
 
@@ -227,7 +242,7 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
         val leftImageFile = convertBitmapToFile(fileName, bitmap)
         val reqFile = RequestBody.create("image/*".toMediaType(), leftImageFile)
         Log.d(TAG, leftImageFile.name)
-        return MultipartBody.Part.createFormData(fileName, leftImageFile.name, reqFile)
+        return MultipartBody.Part.createFormData("image", leftImageFile.name, reqFile)
     }
 
     private fun convertBitmapToFile(fileName: String, bitmap: Bitmap): File {
@@ -237,7 +252,7 @@ class HomeActivity : BaseActivity(), HomeContract.HomeView {
 
         //Convert bitmap to byte array
         val bos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 0 /*ignored for PNG*/, bos)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 10 /*ignored for PNG*/, bos)
         val bitMapData = bos.toByteArray()
 
         //write the bytes in file

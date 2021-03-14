@@ -4,13 +4,13 @@ import com.rutvik.apps.skreamsos.api.models.ResponseMessage
 import com.rutvik.apps.skreamsos.api.models.SOSAlert
 import com.rutvik.apps.skreamsos.api.models.SOSResponse
 import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Callback
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.InputStream
+
 
 object ApiClient {
 
@@ -38,8 +38,8 @@ object ApiClient {
         call.enqueue(callback)
     }
 
-    fun sendSOSImage(callback: Callback<ResponseMessage>, image: MultipartBody.Part) {
-        val call = getClient().uploadImage(token, image)
+    fun sendSOSImage(callback: Callback<ResponseMessage>, image: MultipartBody.Part, name: RequestBody) {
+        val call = getClient().uploadImage(token, image, name)
         call.enqueue(callback)
     }
 }
